@@ -57,12 +57,13 @@ module.exports.post_register = async (req, res) => {
         const qrCreateUserSQL = loadFileSQL('createUser.sql');
         const result = await client.query(qrCreateUserSQL, [email, hashedPassword]);
 
+        // Tạo token jwt
         const createdUser = result.rows[0];
         const token = genJWT(createdUser.id, '3m');
-        console.log(token);
+
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
 
-        return res.status(201).json({ message: "Create User successfully", user: result });
+        return res.status(201).json({ message: "Create User successfully", user: {email} });
 
     } catch (error) {
         if (error.code === '23505') {
