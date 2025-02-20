@@ -3,20 +3,23 @@ const client = require("../db");
 const {loadFileSQL} = require("../utils/script");
 
 const requireAuth = (req, res, next) => {
+    console.log("Required auth user !!!");
     const token = req.cookies.jwt;
 
     if (token) {
         jwt.verify(token, "MT1607", (error, decodedToken) => {
             if (error) {
                 console.log(error.message);
-                res.redirect('/login');
+                // res.redirect('http://localhost:3000/login');
+                res.status(401).send({message: "Dont' have token"});
             } else {
                 console.log(decodedToken);
                 next();
             }
         })
     } else {
-        res.redirect('/login');
+        // res.redirect('http://localhost:3000/login');
+        res.status(401).send({message: "User isn't logged in"});
     }
 }
 
