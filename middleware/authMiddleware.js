@@ -27,21 +27,25 @@ const checkUser = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (token) {
-        jwt.verify(token, "MT1607", (error, decodedToken) => {
+        jwt.verify(token, "MT1607", async (error, decodedToken) => {
             if (error) {
                 console.log(error.message);
+                res.status(403).send({message: "Not found token", error});
                 res.locals.user = null;
                 next()
             } else {
                 console.log(decodedToken);
                 const querySQL = loadFileSQL("getUserById.sql")
-                const user = client.query(querySQL, [decodedToken.userId])
-                res.locals.user = user;
+                const user = await client.query(querySQL, [decodedToken.userId]);
+
+                res.status(200).send({user: user.rows[0]});
+                res.locals.user = user.rows[0];
                 next();
             }
         })
     } else {
         res.locals.user = null;
+        res.status(402).send({message: "Not found user"});
         next()
     }
 }
