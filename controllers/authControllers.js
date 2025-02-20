@@ -29,6 +29,12 @@ module.exports.post_login = async (req, res) => {
             return res.status(400).send("Password incorrect");
         }
 
+        const jwtToken = req.cookies.jwt
+        if (!jwtToken) {
+            const token = genJWT(resGetUser.rows[0].id, '3m');
+            res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
+        }
+
         res.status(200).send({message: "Found user successfully", user: resGetUser.rows[0]});
     } catch (e) {
         console.error("Server error: ",e);
