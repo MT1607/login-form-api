@@ -1,9 +1,10 @@
 const fs = require("fs")
 const jwt = require("jsonwebtoken");
+const path = require('path');
 
 module.exports.loadFileSQL = (fileName) => {
-    const path = `D:/personal/login-form-api/sql/${fileName}`;
-    return fs.readFileSync(path, 'utf-8');
+    const filePath = path.join(__dirname, '../sql', fileName); // ../ để đi lên 1 cấp từ utils
+    return fs.readFileSync(filePath, 'utf-8');
 }
 
 module.exports.genJWT = (userId, maxAge) => {
