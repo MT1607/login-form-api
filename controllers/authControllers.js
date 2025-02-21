@@ -21,7 +21,7 @@ module.exports.post_login = async (req, res) => {
         const resGetUser = await client.query(queryGetUser, [email]);
 
         if (resGetUser.rows.length === 0) {
-           return res.status(401).send("Email incorrect");
+           return res.status(400).send("Email incorrect");
         }
 
         const result = await bcrypt.compare(password, resGetUser.rows[0].password);
@@ -38,7 +38,7 @@ module.exports.post_login = async (req, res) => {
         res.status(200).send({message: "Found user successfully", user: resGetUser.rows[0]});
     } catch (e) {
         console.error("Server error: ",e);
-        res.status(500).send("Server Error");
+        res.status(500).send({message: "Server error"});
     }
 }
 
@@ -46,11 +46,11 @@ module.exports.post_register = async (req, res) => {
     const { email, password } = req.body;
 
     if (!validator.isEmail(email)) {
-        return res.status(401).json({ message: "Email is invalid" });
+        return res.status(400).json({ message: "Email is invalid" });
     }
 
     if (!validator.isLength(password, { min: 6 })) {
-        return res.status(401).json({ message: "Password must be at least 6 characters" });
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
     try {
@@ -69,11 +69,11 @@ module.exports.post_register = async (req, res) => {
 
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
 
-        return res.status(201).json({ message: "Create User successfully", user: {email} });
+        return res.status(200).json({ message: "Create User successfully", user: {email} });
 
     } catch (error) {
         if (error.code === '23505') {
-            return res.status(401).send("User already exist");
+            return res.status(400).send("User already exist");
         }
 
         return res.status(500).send("Server Error");
