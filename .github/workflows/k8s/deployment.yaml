@@ -18,6 +18,6 @@ spec:
     spec:
       containers:
         - name: login-form-api
-          image: ${{ secrets.DOCKER_USERNAME }}/login-form-api:latest
+          image: login-form-api
           ports:
             - containerPort: 3000
