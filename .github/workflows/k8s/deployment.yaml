@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: login-form-api
+  labels:
+    app: login-form-api
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: login-form-api
+  template:
+    metadata:
+      labels:
+        app: login-form-api
+    spec:
+      containers:
+        - name: login-form-api
+          image: ${{ secrets.DOCKER_USERNAME }}/login-form-api:latest
+          ports:
+            - containerPort: 3000

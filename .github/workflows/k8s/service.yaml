@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: login-form-api
+spec:
+  selector:
+    app: login-form-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
