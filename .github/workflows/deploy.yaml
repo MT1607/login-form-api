@@ -36,10 +36,13 @@ jobs:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
 
+      - name: Start Minikube
+        run: minikube start
+
       - name: Configure Kubernetes cluster
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+          minikube -p minikube config view --flatten > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
