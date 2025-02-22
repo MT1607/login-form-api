@@ -25,9 +25,9 @@ jobs:
 
       - name: Start Minikube
         run: |
-          sudo minikube start --driver=docker
-          sudo minikube addons enable ingress
-          sudo minikube status
+          minikube start --driver=docker
+          minikube addons enable ingress
+          minikube status
 
       - name: Configure Kube Config
         run: |
