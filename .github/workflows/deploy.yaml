@@ -44,5 +44,5 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f .github/workflows/k8s/deployment.yaml
-          kubectl apply -f .github/workflows/k8s/service.yaml
-          kubectl apply -f .github/workflows/k8s/ingress.yaml
+#          kubectl apply -f .github/workflows/k8s/service.yaml
+#          kubectl apply -f .github/workflows/k8s/ingress.yaml
