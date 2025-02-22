@@ -42,7 +42,7 @@ jobs:
       - name: Configure Kubernetes cluster
         run: |
           mkdir -p $HOME/.kube
-          minikube -p minikube config view --flatten > $HOME/.kube/config
+          kubectl config view --flatten > $HOME/.kube/config
 
       - name: Deploy to Kubernetes
         run: |
