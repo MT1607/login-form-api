@@ -8,35 +8,34 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Set up Minikube
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y conntrack
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          minikube start --driver=docker
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          minikube update-context
+          cp -r $(minikube profile list | awk 'NR==2 {print $1}') ~/.kube/config
+          echo "KUBE_CONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+          echo "Using kubeconfig at: $KUBE_CONFIG"
 
       - name: Set up Kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'latest'
+          version: latest
 
-      - name: Install Minikube
-        run: |
-          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          chmod +x minikube
-          sudo mv minikube /usr/local/bin/
+      - name: Verify Kubernetes Connection
+        run: kubectl get nodes --kubeconfig=$KUBE_CONFIG
 
-      - name: Start Minikube
-        run: |
-          minikube start --driver=docker
-          minikube addons enable ingress
-          minikube status
-
-      - name: Configure Kube Config
-        run: |
-          mkdir -p $HOME/.kube
-          sudo cp -r /root/.minikube $HOME/.minikube
-          sudo cp /root/.kube/config $HOME/.kube/config
-          export KUBE_CONFIG=$HOME/.kube/config
-          kubectl config view
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f .github/workflows/k8s/deployment.yaml
+      - name: Deploy to Minikube
+        run: kubectl apply -f .github/workflows/k8s/deployment.yaml --kubeconfig=$KUBE_CONFIG
