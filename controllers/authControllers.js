@@ -44,6 +44,11 @@ module.exports.post_login = async (req, res) => {
 
 module.exports.post_register = async (req, res) => {
     const { email, password } = req.body;
+    console.log(req.body);
+
+    if (!email || !password) {
+        return res.status(404).send("Not found body ");
+    }
 
     if (!validator.isEmail(email)) {
         return res.status(400).json({ message: "Email is invalid" });
