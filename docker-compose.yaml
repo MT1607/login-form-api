@@ -17,6 +17,6 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ../../nginx/login-form-api.conf:/etc/nginx/conf.d/default.conf
+      - ../../nginx/login-form-nginx.conf:/etc/nginx/conf.d/login-form-nginx.conf
     depends_on:
       - nodejs
