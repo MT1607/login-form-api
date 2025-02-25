@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  nodejs:
+    build: .
+    container_name: login-form-api
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ../../nginx/login-form-api.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - nodejs
