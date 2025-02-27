@@ -17,18 +17,18 @@ app.use(cors({
 app.use(cookie());
 app.use(express.static('public'));
 app.use(express.json())
-app.use(authRouters);
+app.use("/api/auth" ,authRouters);
 
 
 app.set('views', './views');
 app.set("view engine", "ejs");
 
-app.get('/user', checkUser);
-app.get('/' ,requireAuth ,(req, res) => {
+app.get('/api/auth/user', checkUser);
+app.get('/api/auth' ,requireAuth ,(req, res) => {
     res.send('Hello World!');
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}/api/auth`);
 });
 
