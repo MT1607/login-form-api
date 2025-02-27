@@ -10,7 +10,7 @@ module.exports.get_login = (req, res) => {
 }
 
 module.exports.get_register = (req, res) => {
-    res.send("register")
+    res.render("register")
 }
 
 module.exports.post_login = async (req, res) => {
