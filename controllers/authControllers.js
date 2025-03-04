@@ -31,7 +31,7 @@ module.exports.post_login = async (req, res) => {
 
         const jwtToken = req.cookies.jwt
         if (!jwtToken) {
-            const token = genJWT(resGetUser.rows[0].id, '3m');
+            const token = genJWT(resGetUser.rows[0].id, '1w');
             res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
         }
 
