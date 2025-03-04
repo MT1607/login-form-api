@@ -69,8 +69,8 @@ module.exports.post_register = async (req, res) => {
         const result = await client.query(qrCreateUserSQL, [email, hashedPassword]);
 
         // Tạo token jwt
-        const createdUser = result.rows[0];
-        const token = genJWT(createdUser.id, '3m');
+        const createdUser = result.rows[0].user_id;
+        const token = genJWT(createdUser, '3m');
 
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
 
