@@ -1,11 +1,48 @@
 version: '3.8'
 
 services:
-  login-form:
-    build: .
+  back-end:
     container_name: login-form-api
-    restart: always
+    build:
+      context: .
     ports:
       - "3001:3001"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
+      - DB_USER=postgres
+      - DB_PASSWORD=160700
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=flogin
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - login-form-api-network
+
+  db:
+    image: postgres:16
+    container_name: login-form-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=160700
+      - POSTGRES_DB=flogin
+    volumes:
+      - ./backup.dump:/backup.dump # Mount file backup vào container
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh # Mount script
+    networks:
+      - login-form-api-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
+networks:
+  login-form-api-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
