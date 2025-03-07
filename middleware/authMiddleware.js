@@ -1,53 +1,40 @@
 const jwt = require('jsonwebtoken');
 const client = require("../db");
 const {loadFileSQL} = require("../utils/script");
+const { promisify } = require("util");
 
-const requireAuth = (req, res, next) => {
-    console.log("Required auth user !!!");
-    const token = req.cookies.jwt;
+const requireAuth = async (req, res, next) => {
+    try {
+        const token = req.cookies.jwt;
+        if (!token) {
+            return res.status(401).json({ message: "User isn't logged in" });
+        }
 
-    if (token) {
-        jwt.verify(token, "MT1607", (error, decodedToken) => {
-            if (error) {
-                console.log(error.message);
-                // res.redirect('http://localhost:3000/login');
-                res.status(401).send({message: "Dont' have token"});
-            } else {
-                console.log(decodedToken);
-                next();
-            }
-        })
-    } else {
-        // res.redirect('http://localhost:3000/login');
-        res.status(401).send({message: "User isn't logged in"});
+        const decodeToken = await promisify(jwt.verify)(token, "MT1607");
+        if (!decodeToken) {
+            return res.status(500).json({ message: "Token user is not decoded" });
+        }
+
+        req.user = decodeToken; // Lưu user vào request để dùng sau này
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Authentication failed", error: error.message });
     }
-}
+};
 
-const checkUser = (req, res, next) => {
+const checkUser = async (req, res, next) => {
     const token = req.cookies.jwt;
-
-    if (token) {
-        jwt.verify(token, "MT1607", async (error, decodedToken) => {
-            if (error) {
-                console.log(error.message);
-                res.status(403).send({message: "Not found token", error});
-                res.locals.user = null;
-                next()
-            } else {
-                console.log(decodedToken);
-                const querySQL = loadFileSQL("getUserById.sql")
-                const user = await client.query(querySQL, [decodedToken.userId]);
-
-                res.status(200).send({user: user.rows[0]});
-                res.locals.user = user.rows[0];
-                next();
-            }
-        })
-    } else {
-        res.locals.user = null;
-        res.status(402).send({message: "Not found user"});
-        next()
+    if (!token) {
+        return res.status(402).json({message: "User not logging"});
     }
+    const decodeToken = await promisify(jwt.verify)(token, "MT1607");
+    if (!decodeToken) {
+        return res.status(500).json({message: "Token user is not decoded"});
+    }
+    const userId = decodeToken.userId;
+    const query = loadFileSQL("getUserById.sql");
+    const user = await client.query(query, [userId]);
+    res.status(200).json({message: "Found user", user: user.rows[0].email});
 }
 
 module.exports = {requireAuth, checkUser}
