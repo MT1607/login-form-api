@@ -35,10 +35,9 @@ module.exports.post_login = async (req, res) => {
             res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
         }
 
-        res.status(200).json({message: "Found user successfully", user: resGetUser.rows[0].email});
+        return res.status(200).json({message: "Found user successfully", user: resGetUser.rows[0]});
     } catch (e) {
-        console.error("Server error: ",e);
-        res.status(500).json({message: "Server error"});
+        return res.status(500).json({message: "Server error"});
     }
 }
 
@@ -59,15 +58,12 @@ module.exports.post_register = async (req, res) => {
 
     try {
 
-        // Mã hóa password
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Tạo user mới
         const qrCreateUserSQL = loadFileSQL('createUser.sql');
         const result = await client.query(qrCreateUserSQL, [email, hashedPassword]);
 
-        // Tạo token jwt
         const createdUser = result.rows[0].user_id;
         const token = genJWT(createdUser, '3m');
 

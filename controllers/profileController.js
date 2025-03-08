@@ -48,6 +48,6 @@ module.exports.get_profile = async (req, res) => {
         }
         return res.status(200).json({message: "Profile Found", profile: profileData.rows[0]});
     } catch (e) {
-        res.status(500).json({message: "Server error!"});
+        return res.status(500).json({message: "Server error!"});
     }
 }
