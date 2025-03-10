@@ -39,7 +39,7 @@ module.exports.get_profile = async (req, res) => {
         if (!jwtToken) {
             return res.status(401).json({message: "Unauthorized"});
         }
-        const decodeToken = await promisify(jwtToken.verify)(jwtToken, "MT1607")
+        const decodeToken = await promisify(jwt.verify)(jwtToken, "MT1607");
         const userId = decodeToken.userId;
         const qrGetProfile = loadFileSQL("getProfile.sql");
         const profileData = await client.query(qrGetProfile, [userId]);
