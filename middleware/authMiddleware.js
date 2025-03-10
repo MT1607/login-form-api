@@ -26,7 +26,7 @@ const checkUser = async (req, res, next) => {
     const token = req.cookies.jwt;
     try {
         if (!token) {
-            return res.status(402).json({message: "User not logging"});
+            return res.status(401).json({message: "User not logging"});
         }
         const decodeToken = await promisify(jwt.verify)(token, "MT1607");
         if (!decodeToken) {
@@ -35,7 +35,8 @@ const checkUser = async (req, res, next) => {
         const userId = decodeToken.userId;
         const query = loadFileSQL("getUserById.sql");
         const user = await client.query(query, [userId]);
-        return  res.status(200).json({message: "Found user", user: user.rows[0]});
+        req.user = user.rows[0];
+        next();
     } catch (e) {
         return res.status(500).json({message: "Server error"});
     }

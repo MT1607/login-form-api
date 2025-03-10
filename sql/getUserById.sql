@@ -1,1 +1,1 @@
-SELECT email FROM users WHERE id = $1;
+SELECT id,email FROM users WHERE id = $1;
