@@ -4,6 +4,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 
 const {loadFileSQL, genJWT} = require("../utils/script");
+const {createUserFolder} = require("./s3UserStorageController");
 
 module.exports.get_login = (req, res) => {
     res.render("login")
@@ -68,6 +69,11 @@ module.exports.post_register = async (req, res) => {
         const token = genJWT(createdUser, '3m');
 
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3 * 60 * 1000 });
+        const folderCreated = await createUserFolder(createdUser.toString());
+
+        if (!folderCreated) {
+            console.error(`Failed to create storage folder for user ${createdUser}`);
+        }
 
         return res.status(200).json({ message: "Create User successfully", user: {email} });
 

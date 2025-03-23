@@ -28,7 +28,7 @@ app.set("view engine", "ejs");
 app.get('/api/auth/user', checkUser, (req, res)=>{
     res.status(200).send({user: req.user});
 });
-app.get('/api/auth' ,requireAuth ,(req, res) => {
+app.get('/api/auth' ,(req, res) => {
     res.status(200).send({message: "Success"});
 });
 
