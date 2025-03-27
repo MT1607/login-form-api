@@ -38,20 +38,22 @@ module.exports.put_profile = async (req, res) => {
             // Default avatar handling
             let avatarUrl = existingAvatarUrl;
 
-            // If avatarUrl is explicitly set to "null" or empty string in the request body,
-            // we'll set it to null to remove the existing avatar
-            if (existingAvatarUrl === "null" || existingAvatarUrl === "") {
-                avatarUrl = null;
-            }
-
             // If a new avatar file was uploaded, process it
             if (req.file) {
                 try {
                     // Upload file to S3 in the user's folder
                     const uploadResult = await uploadFileToS3(userId, req.file);
 
-                    // Get a signed URL for the avatar
+                    // Get a permanent download URL for the avatar
                     avatarUrl = await getFileDownloadUrl(uploadResult.key);
+
+                    // Modify the URL to allow permanent access
+                    // This approach depends on your S3 and backend configuration
+                    // You might need to adjust based on your specific setup
+                    if (avatarUrl) {
+                        // Remove the expiration parameter if present
+                        avatarUrl = avatarUrl.split('?')[0];
+                    }
 
                     // Clean up temporary file
                     fs.unlinkSync(req.file.path);
@@ -69,7 +71,7 @@ module.exports.put_profile = async (req, res) => {
                 }
             }
 
-            // Update profile in database with the appropriate avatar URL value
+            // Update profile in database with the avatar URL
             const qrUpdateProfile = loadFileSQL("updateProfile.sql");
             await client.query(qrUpdateProfile, [first_name, last_name, avatarUrl, date_of_birth, userId]);
 
