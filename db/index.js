@@ -16,6 +16,7 @@ client.connect()
         console.log('Connected to PostgreSQL database');
     })
     .catch((err) => {
+        console.log("password: ", process.env.AWS_ACCESS_KEY)
         console.error('Error connecting to PostgreSQL database', err);
     });
 

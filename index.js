@@ -1,9 +1,10 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 const cors = require('cors');
 
 const express = require('express');
 const authRouters = require('./routes/authRouters');
 const profileRouters = require('./routes/profileRouters');
+const fileRouters = require('./routes/fileRouters');
 const cookie = require('cookie-parser');
 const {requireAuth, checkUser} = require("./middleware/authMiddleware");
 
@@ -20,6 +21,8 @@ app.use(express.static('public'));
 app.use(express.json())
 app.use("/api/auth" ,authRouters);
 app.use("/api/auth", profileRouters);
+app.use("/api/auth", fileRouters);
+
 
 
 app.set('views', './views');

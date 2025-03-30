@@ -16,13 +16,3 @@ INSERT INTO files (
     url,
     created_at
 )
-VALUES (
-           gen_random_uuid(),
-           (SELECT user_id FROM new_profile),
-           NULL, -- name is NULL as per your sample data
-           FALSE, -- is_dir default is FALSE
-           NULL, -- parent_id is NULL (root level)
-           NULL, -- url is NULL
-           NOW() -- current timestamp
-       )
-RETURNING user_id;
