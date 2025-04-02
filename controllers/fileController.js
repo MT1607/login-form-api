@@ -184,3 +184,25 @@ module.exports.put_files = async (req, res) => {
         return res.status(500).json({ message: "Server error processing files" });
     }
 };
+
+module.exports.get_files = async (req, res) => {
+    const userId = req.user.id;
+
+    if (!userId) {
+        return res.status(401).json({message: "User Unauthorized"});
+    }
+
+    try {
+        const qrGetFile = loadFileSQL("getFile.sql");
+        const fileData = await client.query(qrGetFile, [userId]);
+        console.log("user id get files: ", userId);
+        console.log("file data: ", fileData);
+        if (!fileData.rows[0]){
+            return res.status(404).json({message: "No File Found"});
+        }
+        return res.status(200).json({message: "Profile Found", file: fileData.rows});
+
+    } catch (e) {
+        return res.status(500).json({message: "Server error!"});
+    }
+}
